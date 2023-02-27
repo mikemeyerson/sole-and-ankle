@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled, { css } from "styled-components/macro";
 
-import { COLORS, WEIGHTS } from '../../constants';
-import { formatPrice, pluralize, isNewShoe } from '../../utils';
-import Spacer from '../Spacer';
+import { COLORS, WEIGHTS } from "../../constants";
+import { formatPrice, pluralize, isNewShoe } from "../../utils";
+import Spacer from "../Spacer";
 
 const ShoeCard = ({
   slug,
@@ -14,6 +14,7 @@ const ShoeCard = ({
   releaseDate,
   numOfColors,
 }) => {
+  const isSale = typeof salePrice === "number";
   // There are 3 variants possible, based on the props:
   //   - new-release
   //   - on-sale
@@ -25,7 +26,7 @@ const ShoeCard = ({
   // both on-sale and new-release, but in this case, `on-sale`
   // will triumph and be the variant used.
   // prettier-ignore
-  const variant = typeof salePrice === 'number'
+  const variant = isSale
     ? 'on-sale'
     : isNewShoe(releaseDate)
       ? 'new-release'
@@ -36,35 +37,68 @@ const ShoeCard = ({
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
+          {variant === "new-release" && (
+            <NewReleaseBanner>Just released!</NewReleaseBanner>
+          )}
+          {variant === "on-sale" && <SaleBanner>Sale</SaleBanner>}
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price isSale={isSale}>{formatPrice(price)}</Price>
         </Row>
         <Row>
-          <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {isSale && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
   );
 };
 
+const Banner = styled.div`
+  border-radius: 2px;
+  color: ${COLORS.white};
+  font-weight: ${WEIGHTS.bold};
+  font-size: ${14 / 16}rem;
+  padding: 8px;
+  position: absolute;
+  top: 12px;
+  right: -4px;
+`;
+
+const NewReleaseBanner = styled(Banner)`
+  background: ${COLORS.secondary};
+`;
+
+const SaleBanner = styled(Banner)`
+  background: ${COLORS.primary};
+`;
+
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+  flex: 1 0 240px;
+  max-width: 100%;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+  width: 100%;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
+  width: 100%;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -72,7 +106,14 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  ${({ isSale }) =>
+    isSale &&
+    css`
+      color: ${COLORS.gray[700]};
+      text-decoration: line-through;
+    `}
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
