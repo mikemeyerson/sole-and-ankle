@@ -61,6 +61,7 @@ const Banner = styled.div`
   color: ${COLORS.white};
   font-weight: ${WEIGHTS.bold};
   font-size: ${14 / 16}rem;
+  /* Could vertically center this using line-height */
   padding: 8px;
   position: absolute;
   top: 12px;
@@ -78,17 +79,14 @@ const SaleBanner = styled(Banner)`
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+  /* Better to put this as a ShoeCardWrapper in ShoeGrid to make this more reusable */
   flex: 1 0 240px;
-  max-width: 100%;
 `;
 
-const Wrapper = styled.article`
-  width: 100%;
-`;
+const Wrapper = styled.article``;
 
 const ImageWrapper = styled.div`
   position: relative;
-  width: 100%;
 `;
 
 const Image = styled.img`
